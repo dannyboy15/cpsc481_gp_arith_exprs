@@ -59,6 +59,15 @@
   (eval rexpr))
 
 
+; Source: https://stackoverflow.com/a/3243264
+(defun avg (the-list)
+  (let ((count 0) (sum 0))
+    (dolist (n the-list)
+      (incf count)
+      (incf sum n))
+    (/ sum (float count))))
+
+
 (defun population_init ()
   (setq pool  ())
 
@@ -121,10 +130,15 @@
 (defun find_best_fit_expr (exprs_list)
   (reduce 'max exprs_list))
 
-(defun get_gen_stats (gen expr_list)
-  (setq rand_list ())
-  (push 'stats rand_list)
-  (push gen rand_list))
+(defun get_gen_stats (gen exprs_list)
+  "Returns a list as (gen min max avg)"
+  (setq stats ())
+  (push (avg exprs_list) stats)
+  (push (reduce 'max exprs_list) stats)
+  (push (reduce 'min exprs_list) stats)
+  (push gen stats)
+
+  stats)
 
 
 (defun next_pool_gen (pool gen)
@@ -180,6 +194,7 @@
 (setq lf (list (calculate_fitness (car l)) (calculate_fitness (car (cdr l)))))
 (print lf)
 (print (find_best_fit_expr lf))
+(print (get_gen_stats 1 lf))
 
 
 
