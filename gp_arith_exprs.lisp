@@ -40,7 +40,7 @@
                         rnth
                         (cdr rtree))) ;; Find elt in the cdr subtree.
          ((<= rnth size1) (tree-nth ;;  Elt is in car subtree.
-rnth
+                           rnth
                            (car rtree))) ;; Find elt in the car subtree.
          (t (tree-nth ;; Elt is in cdr subtree.
              (- rnth size1) ;; Account for skipping car subtree.
@@ -278,8 +278,8 @@ rnth
 ;; ((a b c) (a) (e f g) (a d))
 
 ;; ----------------------------------------------------------- deep-copy ----
-(defun deepcopy ( rn )
-;;  (cond 
+; (defun deepcopy ( rn )
+;;  (cond
 ;;    ((not (listp rn)) rn)
 ;;   (T (let ((lx (deepcopy(car rn)))
 ;;             (rx (deepcopy (cdr rn))))
