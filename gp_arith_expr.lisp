@@ -118,8 +118,8 @@
 
   fitness)
 
-(defun find_best_fit_expr (exps_list)
-  'best_expr)
+(defun find_best_fit_expr (exprs_list)
+  (reduce 'max exprs_list))
 
 (defun get_gen_stats (gen expr_list)
   (setq rand_list ())
@@ -170,9 +170,16 @@
 ;   (print best_fit_exprs))
 
 ; (print (population_init))
-(setq e (create_new_expr))
-(print e)
-(print (calculate_fitness e))
+; (setq e (create_new_expr))
+; (print e)
+; (print (calculate_fitness e))
+; (print (find_best_fit_expr '(9 -7 5 113)))
+
+(setq l (list (create_new_expr) (create_new_expr)))
+(print l)
+(setq lf (list (calculate_fitness (car l)) (calculate_fitness (car (cdr l)))))
+(print lf)
+(print (find_best_fit_expr lf))
 
 
 
