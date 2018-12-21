@@ -1,13 +1,4 @@
- ;;-------------- support functions tests --------------------------------------
-(load "support_fcns")
-
-;; ----------------- cell-count ------------------------------------------------
-(cell-count '(a b c))
-;;3
-(cell-count '(a (b) c))
-;;4
-(cell-count '(a))
-;;1
+;;-------------- support functions tests --------------------------------------
 
 ;; ------------------------------------------------------- tree-nth-cell ----
 (defun tree-nth-cell (rnth rtree)
@@ -30,7 +21,7 @@
                         rnth
                         (cdr rtree))) ;; Find elt in the cdr subtree.
          ((<= rnth size1) (tree-nth-cell ;;  Elt is in car subtree.
-rnth
+                           rnth
                            (car rtree))) ;; Find elt in the car subtree.
          (t (tree-nth-cell ;; Elt is in cdr subtree.
              (- rnth size1) ;; Account for skipping car subtree.
@@ -110,5 +101,3 @@ rnth
   "Return just the Pop of critters from the Scored Pop."
   ;;Alt: (mapcar #'(lambda (elt) (nth 1 elt)) rscored-pop)
   (mapcar #'cadr rscored-pop))
-
-
