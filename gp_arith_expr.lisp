@@ -31,11 +31,33 @@
 (setq OPERANDS_VARS '(x y z))
 (setq OPERATORS '(+ - *))
 (setq MAX_NUM_ARGS 4)
+; (setq SAMPLES '((0 -2 1 -16)
+;                 (-4 -5 -3 58)
+;                 (9 8 -6 72)
+;                 (9 -7 5 113)
+;                 (-8 7 3 150)
+;                 (5 4 -5 20)
+;                 (6 -4 6 41)
+;                 (-5 3 -7 -24)
+;                 (-6 -5 9 -18)
+;                 (1 0 2 2)))
+(setq SAMPLES '((0 -2 1 -16)))
 
-; https://stackoverflow.com/questions/13937520/pythons-range-analog-in-common-lisp
+
+; Source: https://stackoverflow.com/questions/13937520/pythons-range-analog-in-common-lisp
 (defun range (max &key (min 0) (step 1))
    (loop for n from min below max by step
       collect n))
+
+
+(defun run_expr (rvars rexpr)
+  "Evaluate expr using vars."
+  (setq x (nth 0 rvars))
+  (setq y (nth 1 rvars))
+  (setq z (nth 2 rvars))
+
+  (eval rexpr))
+
 
 (defun population_init ()
   (setq pool  ())
@@ -48,6 +70,7 @@
 
   pool)
 
+
 (defun create_new_expr ()
   ; pick operation
   (setq n (random (length OPERATORS)))
@@ -57,7 +80,7 @@
   (setq num_args (random MAX_NUM_ARGS))
 
   ; create list of operands
-  (setq operands (append OPERANDS_VARS (range (1+ RANGE_MAX) :min RANGE_MIN)))
+  (setq operands (append OPERANDS_VARS (append OPERANDS_VARS (range (1+ RANGE_MAX) :min RANGE_MIN))))
 
   ; pick a random value for each arg and add it to expression
   (setq expr ())
@@ -74,10 +97,26 @@
   expr)
 
 
-
-
 (defun calculate_fitness (expr)
-  'fit)
+  (setq fitness 0)
+
+  (loop for s in SAMPLES
+    ; get the arguements and expected result from sample
+    do (setq vars (reverse (cdr (reverse s))))
+    do (setq expected (car (reverse s)))
+    ; (print vars)
+    ; (print expected)
+
+    ; get the delta
+    do (setq res (run_expr vars expr))
+    ; (print res)
+    do (setq delta (- expected res))
+    ; (print delta)
+
+    ; accumulate delta
+    do (setq fitness (+ fitness (abs delta))))
+
+  fitness)
 
 (defun find_best_fit_expr (exps_list)
   'best_expr)
@@ -130,7 +169,10 @@
 ;   (print gen_stats) ; save to file
 ;   (print best_fit_exprs))
 
-(print (population_init))
+; (print (population_init))
+(setq e (create_new_expr))
+(print e)
+(print (calculate_fitness e))
 
 
 
