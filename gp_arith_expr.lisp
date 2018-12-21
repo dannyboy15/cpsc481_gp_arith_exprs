@@ -125,17 +125,29 @@
     ; accumulate delta
     do (setq fitness (+ fitness (abs delta))))
 
-  fitness)
+  (list fitness expr))
 
 (defun find_best_fit_expr (exprs_list)
-  (reduce 'max exprs_list))
+  ; (reduce 'max exprs_list))
+  (setq mx -100000)
+  (setq mxe NIL)
+
+  (loop for e in exprs_list
+    do (if (> (car e) mx)
+         (progn
+           (setq mx (car e))
+           (setq mxe e))))
+  mxe)
 
 (defun get_gen_stats (gen exprs_list)
   "Returns a list as (gen min max avg)"
+  (setq scores_only ())
+  (loop for e in exprs_list
+    do (push (car e) scores_only))
   (setq stats ())
-  (push (avg exprs_list) stats)
-  (push (reduce 'max exprs_list) stats)
-  (push (reduce 'min exprs_list) stats)
+  (push (avg scores_only) stats)
+  (push (reduce 'max scores_only) stats)
+  (push (reduce 'min scores_only) stats)
   (push gen stats)
 
   stats)
@@ -169,9 +181,9 @@
 (defun make_mutated_kids (kids)
   (setq r (random 100))
   (setq new_ks ())
-  (print kids)
+  ; (print kids)
 
-  (print r)
+  ; (print r)
   (loop for k in kids
     do (if (or (= 20 r) (= 40 r) (= 60 r) (= 80 r) (= 100 r))
         (if (< 50 r)
@@ -220,39 +232,39 @@
   new_pool)
 
 ; Main program
-; (progn
-;   (setq current_gen 0)
-;   (setq best_fit_exprs ())
-;   (setq gen_stats ())
-;
-;   ; Initialize the poplution
-;   (setq pool (population_init))
-;   (print pool)
-;
-;   ; Run through generations
-;   (loop
-;     (setq current_gen (+ current_gen 1))
-;     (setq fitness_list ())
-;
-;     ; calculate the fitness of each expression
-;     (loop for e in pool
-;       do (push (calculate_fitness e) fitness_list)
-;       do (print fitness_list))
-;
-;     ; get the generation statistics
-;     (push (get_gen_stats current_gen fitness_list) best_fit_exprs)
-;
-;     ; find the best expression and add it to our list
-;     (push (find_best_fit_expr fitness_list) gen_stats)
-;
-;     ; get the new generation
-;     (setq pool (next_pool_gen pool current_gen))
-;     (print pool)
-;
-;     (when (>= current_gen MAX_GENERATIONS) (return current_gen)))
-;
-;   (print gen_stats) ; save to file
-;   (print best_fit_exprs))
+(progn
+  (setq current_gen 0)
+  (setq best_fit_exprs ())
+  (setq gen_stats ())
+
+  ; Initialize the poplution
+  (setq pool (population_init))
+  (print pool)
+
+  ; Run through generations
+  (loop
+    (setq current_gen (+ current_gen 1))
+    (setq fitness_list ())
+
+    ; calculate the fitness of each expression
+    (loop for e in pool
+      do (push (calculate_fitness e) fitness_list))
+      ; do (print fitness_list))
+
+    ; get the generation statistics
+    (push (get_gen_stats current_gen fitness_list) best_fit_exprs)
+
+    ; find the best expression and add it to our list
+    (push (find_best_fit_expr fitness_list) gen_stats)
+
+    ; get the new generation
+    (setq pool (next_pool_gen pool current_gen))
+    ; (print pool)
+
+    (when (>= current_gen MAX_GENERATIONS) (return current_gen)))
+
+  (print gen_stats) ; save to file
+  (print best_fit_exprs))
 
 ; (print (population_init))
 ; (setq e (create_new_expr))
@@ -271,7 +283,7 @@
 
 ; (print (make_mutated_kids (list '(+ 1 2 3 4) '(- 0 9 8 7 7 6))))
 
-(print (next_pool_gen '((+ 1 2 3 4 5) (- 0 9 8 7 6)) 1))
+; (print (next_pool_gen '((+ 1 2 3 4 5) (- 0 9 8 7 6)) 1))
 
 
 
