@@ -275,4 +275,4 @@ rnth
 ;; my-pop-scored
 ;; ((3 (a b c)) (1 (a)) (3 (e f g)) (2 (a d)))
 ;; (get-pop-from-scored my-pop-scored)
-;; ((a b c) (a) (e f g) (a d))
+;; ((a b c) (a) (e f g) (a d)))
