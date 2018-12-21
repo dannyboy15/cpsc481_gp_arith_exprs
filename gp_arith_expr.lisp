@@ -141,11 +141,82 @@
   stats)
 
 
+(defun make_crossed_kids (p1 p2 c1 c2)
+  (setq ck1 (list (car p1)))
+  (setq ck2 (list (car p2)))
+
+  ; (print p1)
+
+  ; make crossed kid 1
+  (loop
+    for i from 1 to (1- c1)
+    do (setq ck1 (append ck1 (list (nth i p1)))))
+  (loop
+    for i from c2 to (1- (length p2))
+    do (setq ck1 (append ck1 (list (nth i p2)))))
+
+  ; make crossed kid 2
+  (loop
+    for i from 1 to (1- c2)
+    do (setq ck2 (append ck2 (list (nth i p2)))))
+  (loop
+    for i from c1 to (1- (length p1))
+    do (setq ck2 (append ck2 (list (nth i p1)))))
+
+  (list ck1 ck2))
+
+
+(defun make_mutated_kids (kids)
+  (setq r (random 100))
+  (setq new_ks ())
+  (print kids)
+
+  (print r)
+  (loop for k in kids
+    do (if (or (= 20 r) (= 40 r) (= 60 r) (= 80 r) (= 100 r))
+        (if (< 50 r)
+          (progn
+            ; pick operation
+            (setq n (random (length OPERATORS)))
+            (setq op (nth n OPERATORS))
+
+            (pop k)
+            (setq new_k (append (list op) k))
+            (push new_k new_ks))
+          (progn
+            (setq n (/ r 20))
+            (setq operands (append OPERANDS_VARS (append OPERANDS_VARS (range (1+ RANGE_MAX) :min RANGE_MIN))))
+            (setq m (random (length operands)))
+            (setq new_k ())
+            (if (< n (length k))
+              (progn
+                (loop
+                  for i from 1 to (length k)
+                  do (if (eq i n)
+                       (setq new_k (append new_k (list (nth m operands))))
+                       (setq new_k (append new_k (list (nth i k))))))))
+
+            (push new_k new_ks)))
+        (push k new_ks)))
+  new_ks)
+
+
 (defun next_pool_gen (pool gen)
   (setq new_pool ())
-  (loop for e in pool
-    do (push gen new_pool))
 
+  (when pool
+    (setq parent1 (pop pool))
+    (setq parent2 (pop pool))
+    (setq cross1 (1+ (random (1- (length parent1)))))
+    (setq cross2 (1+ (random (1- (length parent2)))))
+    ; (print cross1)
+    ; (print cross2)
+
+    (setq ckids (make_crossed_kids parent1 parent2 cross1 cross2))
+    (setq mkids (make_mutated_kids ckids))
+
+    (loop for k in mkids
+      do (push k new_pool)))
   new_pool)
 
 ; Main program
@@ -189,12 +260,18 @@
 ; (print (calculate_fitness e))
 ; (print (find_best_fit_expr '(9 -7 5 113)))
 
-(setq l (list (create_new_expr) (create_new_expr)))
-(print l)
-(setq lf (list (calculate_fitness (car l)) (calculate_fitness (car (cdr l)))))
-(print lf)
-(print (find_best_fit_expr lf))
-(print (get_gen_stats 1 lf))
+; (setq l (list (create_new_expr) (create_new_expr)))
+; (print l)
+; (setq lf (list (list (car l) (calculate_fitness (car l))) (list (car (cdr l)) (calculate_fitness (car (cdr l))))))
+; (print lf)
+; (print (find_best_fit_expr lf))
+; (print (get_gen_stats 1 lf))
+
+; (print (make_crossed_kids '(1 2 3 4 5 6 7 8 9 0) '(a b c d e f g h i j k l) 2 6))
+
+; (print (make_mutated_kids (list '(+ 1 2 3 4) '(- 0 9 8 7 7 6))))
+
+(print (next_pool_gen '((+ 1 2 3 4 5) (- 0 9 8 7 6)) 1))
 
 
 
