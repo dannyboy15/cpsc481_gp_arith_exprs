@@ -219,12 +219,12 @@ rnth
   "Return list head from 0-th thru N-th elt.  Assumes elt-n is unique."
   (let ((elt-n (nth rn rlist)))
     (reverse (member elt-n (reverse rlist)))))
-;; Tests
-;; (setq my-list '((1 a) (2 b) (3 c) (4 d) (5 e) (6 f) (7 g)))
-;; (get-front-from-nth 4 my-list)
-;; ((1 a) (2 b) (3 c) (4 d) (5 e))
-;; (get-front-from-nth 2 my-list)
-;; ((1 a) (2 b) (3 c))
+ Tests
+ (setq my-list '((1 a) (2 b) (3 c) (4 d) (5 e) (6 f) (7 g)))
+  get-front-from-nth 4 my-list)
+ ((1 a) (2 b) (3 c) (4 d) (5 e))
+ (get-front-from-nth 2 my-list)
+ ((1 a) (2 b) (3 c))
 
 
 ;; ---------------------------------------------------------- get-score ----
@@ -276,3 +276,31 @@ rnth
 ;; ((3 (a b c)) (1 (a)) (3 (e f g)) (2 (a d)))
 ;; (get-pop-from-scored my-pop-scored)
 ;; ((a b c) (a) (e f g) (a d))
+;; ----------------------------------------------------------- deep-copy ----
+(defun deepcopy ( rn )
+;;  (cond 
+;;    ((not (listp rn)) rn)
+;;   (T (let ((lx (deepcopy(car rn)))
+;;             (rx (deepcopy (cdr rn))))
+;;            (cons lx rx)))))
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
