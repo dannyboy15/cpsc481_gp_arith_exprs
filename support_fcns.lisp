@@ -1,43 +1,13 @@
-;; -------------- support functions --------------------------------------------
+ ;;-------------- support functions tests --------------------------------------
+(load "support_fcns")
 
 ;; ----------------- cell-count ------------------------------------------------
-(defun cell-count (rt)
-  "Return the number of nodes/cells in the tree.  Skip non-cells."
-  (cond
-   ((null rt) 0)
-   ((not (listp rt)) 0)
-   (t (let ((cc (length rt)))
-        (+ cc (apply #'+ (mapcar #'cell-count rt)))))))
-
-
-;; --------------------------- tree-nth ----------------------------------------
-(defun tree-nth (rnth rtree)
-  "Return the DFS N-th subtree/elt in the given tree."
-  (let ((size (cell-count rtree)))
-    ;; (print (list :dbga rnth size (car rtree)))
-    (cond
-     ((not (integerp rnth)) nil)
-     ((not (listp rtree)) nil) ;; Not a tree?
-     ((null rtree) nil) ;; No tree elts?
-     ((= 1 rnth) (car rtree)) ;; 1st elt of list is its car subtree.
-     ((>= 0 rnth) nil) ;; Nth 0 or negative?
-     ((> rnth size) nil) ;; N-th beyond tree's end?
-     ((= 1 size) (car rtree)) ;; 1st elt is Tree's car.
-     (t ;; Elt is in car subtree or cdr "subtree".
-      (setq rnth (1- rnth)) ;;Account: Elt isn't the current (car+cdr's) node.
-      (let ((size1 (cell-count (car rtree))))
-        ;; (print (list :dbgb rnth size1 (car rtree)))
-        (cond
-         ((>= 0 size1) (tree-nth ;; No car subtree.
-                        rnth
-                        (cdr rtree))) ;; Find elt in the cdr subtree.
-         ((<= rnth size1) (tree-nth ;;  Elt is in car subtree.
-                           rnth
-                           (car rtree))) ;; Find elt in the car subtree.
-         (t (tree-nth ;; Elt is in cdr subtree.
-             (- rnth size1) ;; Account for skipping car subtree.
-             (cdr rtree))))))))) ;; Skip car subtree.
-
+(cell-count '(a b c))
+;;3
+(cell-count '(a (b) c))
+;;4
+(cell-count '(a))
+;;1
 
 ;; ------------------------------------------------------- tree-nth-cell ----
 (defun tree-nth-cell (rnth rtree)
@@ -60,7 +30,7 @@
                         rnth
                         (cdr rtree))) ;; Find elt in the cdr subtree.
          ((<= rnth size1) (tree-nth-cell ;;  Elt is in car subtree.
-                           rnth
+rnth
                            (car rtree))) ;; Find elt in the car subtree.
          (t (tree-nth-cell ;; Elt is in cdr subtree.
              (- rnth size1) ;; Account for skipping car subtree.
@@ -76,7 +46,6 @@
          (spot (tree-nth-cell nth rtree)))
     ;; (print (list :dbg size nth spot))
     spot))
-
 
 ;; ------------------------------------------------------------ make-kid ----
 (defun make-kid (rmom rtgt rnew)
@@ -107,7 +76,7 @@
 
 
 ;; -------------------------------------------------- get-front-upto-nth ----
-(defun get-front-upto-nth ( rn rlist)
+(defun get-front-upto-nth ( rn rlist )
   "Return list head from 0-th thru N-th elt.  Assumes elt-n is unique."
   (let ((elt-n (nth rn rlist)))
     (reverse (member elt-n (reverse rlist)))))
@@ -120,16 +89,15 @@
 
 
 ;; ---------------------------------------------------------- score-pop ----
-(defun score-pop ( rpop) ;; Pop is a population.
+(defun score-pop ( rpop ) ;; Pop is a population.
   "Create Pop-Scored pairs (Score Critter) given Pop list of critters."
   (mapcar #'(lambda (critter)
               (let ((score (get-score critter)))
                 (list score critter)))
           rpop))
 
-
 ;; ------------------------------------------------ safe-sort-scored-pop ----
-(defun safe-sort-scored-pop ( rscored-pop)
+(defun safe-sort-scored-pop ( rscored-pop )
   "Return a sorted list of scored-critter elts.  Don't change given list.
    NB, your Lisp's built-in sort fcn may damage the incoming list."
   (let ((sacrifice-list (copy-list rscored-pop)))
@@ -137,9 +105,10 @@
           #'(lambda (scored-critter-1 scored-critter-2)
               (< (car scored-critter-1) (car scored-critter-2))))))
 
-
-;; ------------------------------------------------- get-pop-from-scored ----
+-- get-pop-from-scored ----
 (defun get-pop-from-scored (rscored-pop)
   "Return just the Pop of critters from the Scored Pop."
   ;;Alt: (mapcar #'(lambda (elt) (nth 1 elt)) rscored-pop)
   (mapcar #'cadr rscored-pop))
+
+
