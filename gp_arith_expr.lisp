@@ -1,21 +1,31 @@
-; GP Framework
-; (progn)
-;   (do until current pool filled ;; init population
-;       create new expr
-;       add expr to current pool )
-;   (do until exceed terminal generation count
-;       bump generation count
-;       (for each expr in current pool
-;            calc fitness for expr )
-;       save a copy of most fit expr for this generation
-;       (do until no more exprs in current pool
-;           select 2 exprs as parents
-;           remove parents from current pool
-;           select crossover point/node in each parent
-;           make crossed kids
-;           expose each kid to mutation
-;           add kids to next pool )
-;       current pool = next pool ))
+;; GP Arithmetic Expressions
+;; Authors:
+;; - Daniel Bravo - [bravod@csu.fullerton.edu]
+;; - Barry Ibarra - [barryjr01@csu.fullerton.edu]
+;;
+;; Description
+;; This program attempts to simulate the fitness of expressions
+;; over the course of various generations. See the general
+;; framework below.
+;;
+;; GP Framework
+;; (progn)
+;;   (do until current pool filled ;; init population
+;;       create new expr
+;;       add expr to current pool )
+;;   (do until exceed terminal generation count
+;;       bump generation count
+;;       (for each expr in current pool
+;;            calc fitness for expr )
+;;       save a copy of most fit expr for this generation
+;;       (do until no more exprs in current pool
+;;           select 2 exprs as parents
+;;           remove parents from current pool
+;;           select crossover point/node in each parent
+;;           make crossed kids
+;;           expose each kid to mutation
+;;           add kids to next pool )
+;;       current pool = next pool ))
 
 ; load support functions
 ; (load "support_fcns")
