@@ -15,6 +15,10 @@ To simplify things, each individual of our population is an arithmetic expressio
 
 ### Files
 * gp_arith_expr.lisp
+* README.md
+* output.txt
+* data.csv
+* stat_over_generation.png
 
 ### External Requirements
 None
