@@ -24,24 +24,24 @@
 (setf *random-state* (make-random-state t))
 
 ; Global variables
-(setq MAX_GENERATIONS 5)
-(setq POPULATION_SIZE 5)
+(setq MAX_GENERATIONS 50)
+(setq POPULATION_SIZE 50)
 (setq RANGE_MIN -9)
 (setq RANGE_MAX 9)
 (setq OPERANDS_VARS '(x y z))
 (setq OPERATORS '(+ - *))
 (setq MAX_NUM_ARGS 4)
-; (setq SAMPLES '((0 -2 1 -16)
-;                 (-4 -5 -3 58)
-;                 (9 8 -6 72)
-;                 (9 -7 5 113)
-;                 (-8 7 3 150)
-;                 (5 4 -5 20)
-;                 (6 -4 6 41)
-;                 (-5 3 -7 -24)
-;                 (-6 -5 9 -18)
-;                 (1 0 2 2)))
-(setq SAMPLES '((0 -2 1 -16)))
+(setq SAMPLES '((0 -2 1 -16)
+                (-4 -5 -3 58)
+                (9 8 -6 72)
+                (9 -7 5 113)
+                (-8 7 3 150)
+                (5 4 -5 20)
+                (6 -4 6 41)
+                (-5 3 -7 -24)
+                (-6 -5 9 -18)
+                (1 0 2 2)))
+; (setq SAMPLES '((0 -2 1 -16)))
 
 
 ; Source: https://stackoverflow.com/questions/13937520/pythons-range-analog-in-common-lisp
@@ -158,40 +158,70 @@
   (setq ck2 (list (car p2)))
 
   ; (print p1)
+  (format t "crossing: ~a~%" (list p1 p2))
 
-  ; make crossed kid 1
-  (loop
-    for i from 1 to (1- c1)
-    do (setq ck1 (append ck1 (list (nth i p1)))))
-  (loop
-    for i from c2 to (1- (length p2))
-    do (setq ck1 (append ck1 (list (nth i p2)))))
+  (if (or (> 2 (length p1)) (> 2 (length p1)))
+    (progn
+      (setq ck1 p1)
+      (setq ck1 p1))
+    (progn
+      (loop
+        for i from 1 to (1- c1)
+        do (setq ck1 (append ck1 (list (nth i p1)))))
+      (loop
+        for i from c2 to (1- (length p2))
+        do (setq ck1 (append ck1 (list (nth i p2)))))
 
-  ; make crossed kid 2
-  (loop
-    for i from 1 to (1- c2)
-    do (setq ck2 (append ck2 (list (nth i p2)))))
-  (loop
-    for i from c1 to (1- (length p1))
-    do (setq ck2 (append ck2 (list (nth i p1)))))
+      (loop
+        for i from 1 to (1- c2)
+        do (setq ck2 (append ck2 (list (nth i p2)))))
+      (loop
+        for i from c1 to (1- (length p1))
+        do (setq ck2 (append ck2 (list (nth i p1)))))))
 
-  (list ck1 ck2))
+
+  ; ; make crossed kid 1
+  ; (if (> 2 (length p1))
+  ;   (progn
+  ;     (loop
+  ;       for i from 1 to (1- c1)
+  ;       do (setq ck1 (append ck1 (list (nth i p1)))))
+  ;     (loop
+  ;       for i from c2 to (1- (length p2))
+  ;       do (setq ck1 (append ck1 (list (nth i p2))))))
+  ;   (setq ck1 p1))
+  ;
+  ; ; make crossed kid 2
+  ; (if (> 2 (length p1))
+  ;   (progn
+  ;     (loop
+  ;       for i from 1 to (1- c2)
+  ;       do (setq ck2 (append ck2 (list (nth i p2)))))
+  ;     (loop
+  ;       for i from c1 to (1- (length p1))
+  ;       do (setq ck2 (append ck2 (list (nth i p1))))))
+  ;   (setq ck1 p1))
+
+  (setq cks (list ck1 ck2))
+  (format t "crossed: ~a~%" cks)
+  cks)
 
 
 (defun make_mutated_kids (kids)
   (setq r (random 100))
   (setq new_ks ())
   ; (print kids)
-
-  ; (print r)
+  (format t "before mutate: ~a~%" kids)
+  (format t "r ~d~%" r)
   (loop for k in kids
     do (if (or (= 20 r) (= 40 r) (= 60 r) (= 80 r) (= 100 r))
-        (if (< 50 r)
+        (if (< r 50)
           (progn
             ; pick operation
             (setq n (random (length OPERATORS)))
             (setq op (nth n OPERATORS))
 
+            (format t "inside even k: ~a" k)
             (pop k)
             (setq new_k (append (list op) k))
             (push new_k new_ks))
@@ -202,21 +232,45 @@
             (setq new_k ())
             (if (< n (length k))
               (progn
+                (format t "k ~d n~d~%" (length k) n)
                 (loop
-                  for i from 1 to (length k)
+                  for i from 0 to (1- (length k))
                   do (if (eq i n)
                        (setq new_k (append new_k (list (nth m operands))))
-                       (setq new_k (append new_k (list (nth i k))))))))
+                       (setq new_k (append new_k (list (nth i k))))))
+                (push new_k new_ks))
+              (progn
+                (format t "k is~a~%" k)
+                (setq new_k k)
+                (push new_k new_ks)))))
 
-            (push new_k new_ks)))
         (push k new_ks)))
+  (format t "mutated: ~a~%" new_ks)
   new_ks)
 
 
 (defun next_pool_gen (pool gen)
   (setq new_pool ())
 
-  (when pool
+  ; (when pool
+  ;   (format t "length of pool: ~d" (length pool))
+  ;   (setq parent1 (pop pool))
+  ;   (setq parent2 (pop pool))
+  ;   (setq cross1 (1+ (random (1- (length parent1)))))
+  ;   (setq cross2 (1+ (random (1- (length parent2)))))
+  ;   ; (print cross1)
+  ;   ; (print cross2)
+  ;
+  ;   (setq ckids (make_crossed_kids parent1 parent2 cross1 cross2))
+  ;   (setq mkids (make_mutated_kids ckids))
+  ;
+  ;   (loop for k in mkids
+  ;     do (push k new_pool)))
+
+  (setq l (length pool))
+  (dotimes (i (/ l 2))
+    (format t "length of pool: ~d~%" (length pool))
+    (format t "current pool: ~a~%" pool)
     (setq parent1 (pop pool))
     (setq parent2 (pop pool))
     (setq cross1 (1+ (random (1- (length parent1)))))
@@ -229,7 +283,15 @@
 
     (loop for k in mkids
       do (push k new_pool)))
+
+  (format t "new pool: ~a~%" new_pool)
   new_pool)
+
+
+(defun write_to_file (file data)
+  (with-open-file (stream file :direction :output)
+    (loop for l in data
+        do (format stream "~{~A~#[~:;, ~]~}~%" l))))
 
 ; Main program
 (progn
@@ -239,23 +301,26 @@
 
   ; Initialize the poplution
   (setq pool (population_init))
-  (print pool)
+  ; (print pool)
 
   ; Run through generations
   (loop
     (setq current_gen (+ current_gen 1))
     (setq fitness_list ())
+    (format t "Current generation: ~d~%" current_gen)
+    (print pool)
 
     ; calculate the fitness of each expression
     (loop for e in pool
+      do (format t "working with: ~a~%" e)
       do (push (calculate_fitness e) fitness_list))
       ; do (print fitness_list))
 
     ; get the generation statistics
-    (push (get_gen_stats current_gen fitness_list) best_fit_exprs)
+    (push (get_gen_stats current_gen fitness_list) gen_stats)
 
     ; find the best expression and add it to our list
-    (push (find_best_fit_expr fitness_list) gen_stats)
+    (push (find_best_fit_expr fitness_list) best_fit_exprs)
 
     ; get the new generation
     (setq pool (next_pool_gen pool current_gen))
@@ -263,7 +328,8 @@
 
     (when (>= current_gen MAX_GENERATIONS) (return current_gen)))
 
-  (print gen_stats) ; save to file
+  ; (print gen_stats) ; save to file
+  (write_to_file "data.csv" gen_stats)
   (print best_fit_exprs))
 
 ; (print (population_init))
